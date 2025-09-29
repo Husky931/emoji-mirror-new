@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Emoji Mirror (Offline Demo)</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="canvas" width="960" height="540"></canvas>
+
+      <div id="controls">
+        <button id="btnStart">Start Camera</button>
+        <button id="btnFS">Fullscreen</button>
+      </div>
+
+      <div id="tips">
+        Make a few faces: 🙂 😮 😡 😜 😐 <br />
+        1) Start • 2) Try expressions
+      </div>
+    </div>
+
+    <!-- ES module -->
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
