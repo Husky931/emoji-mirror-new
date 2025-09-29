@@ -7,18 +7,50 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="app">
-      <canvas id="canvas" width="960" height="540"></canvas>
+    <div id="app" aria-label="Emoji Mirror App">
+      <!-- Left: camera + toggle -->
+      <section id="leftPane" aria-label="Camera panel">
+        <canvas
+          id="canvas"
+          width="960"
+          height="540"
+          aria-label="Camera preview"
+        ></canvas>
 
-      <div id="controls">
-        <button id="btnStart">Start Camera</button>
-        <button id="btnFS">Fullscreen</button>
-      </div>
+        <div id="controls">
+          <button
+            id="btnCamera"
+            class="btn btn-toggle off"
+            aria-pressed="false"
+          >
+            Turn Camera On
+          </button>
+        </div>
+      </section>
 
-      <div id="tips">
-        Make a few faces: 🙂 😮 😡 😜 😐 <br />
-        1) Start • 2) Try expressions
-      </div>
+      <!-- Right: top = faces list, bottom = current face -->
+      <aside id="rightPane" aria-label="Expressions panel">
+        <div id="panelFaces" class="card">
+          <h2 class="panel-title">Make a few faces</h2>
+          <div
+            id="emojiList"
+            class="emoji-row"
+            aria-label="Available expressions"
+          ></div>
+        </div>
+
+        <div id="panelCurrent" class="card">
+          <h2 class="panel-title">Current face</h2>
+          <div
+            id="currentEmoji"
+            class="current-emoji"
+            aria-live="polite"
+            aria-atomic="true"
+          >
+            😐
+          </div>
+        </div>
+      </aside>
     </div>
 
     <!-- ES module -->
