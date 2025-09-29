@@ -6,22 +6,25 @@ import {
   FilesetResolver,
 } from "./vendor/tasks-vision/vision_bundle.js";
 
-// -------- Config (match your local file structure) --------
+/* ---------- Config (match your local file structure) ---------- */
 const WASM_ROOT = "./vendor/tasks-vision/wasm"; // folder copied from @mediapipe/tasks-vision/wasm
 const MODEL_TASK_URL = "./assets/face_landmarker.task"; // your local task file
 
-// -------- DOM --------
+/* ---------- DOM ---------- */
+const app = document.getElementById("app");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const btnStart = document.getElementById("btnStart");
 const btnFS = document.getElementById("btnFS");
+const controls = document.getElementById("controls");
+const tips = document.getElementById("tips");
 
-// -------- State --------
+/* ---------- State ---------- */
 let video = null;
 let landmarker = null;
 let running = false;
 
-// -------- Emoji logic (no calibration) --------
+/* ---------- Emoji logic (no calibration) ---------- */
 const EMOJI_SET = {
   neutral: "😐",
   smile: "🙂",
@@ -67,17 +70,53 @@ function pickEmoji(blend) {
   return EMOJI_SET[best];
 }
 
+/* ---------- Sizing & drawing helpers ---------- */
+// Ensure the canvas's internal pixel buffer matches its displayed CSS size (HiDPI crisp)
+function resizeCanvasToContainer() {
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = Math.max(1, Math.floor(canvas.clientWidth));
+  const cssH = Math.max(1, Math.floor(canvas.clientHeight));
+
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+
+  // Draw in CSS pixels by scaling the context
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.scale(dpr, dpr);
+}
+
+// Draw the video letterboxed within the canvas (no distortion)
+function drawVideoContained(videoEl) {
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+  const ar = (videoEl.videoWidth || 16) / (videoEl.videoHeight || 9);
+
+  let dw = cw;
+  let dh = dw / ar;
+  if (dh > ch) {
+    dh = ch;
+    dw = dh * ar;
+  }
+
+  const dx = (cw - dw) / 2;
+  const dy = (ch - dh) / 2;
+
+  ctx.drawImage(videoEl, dx, dy, dw, dh);
+}
+
 function drawEmoji(emoji) {
-  const size = Math.min(canvas.width, canvas.height) * 0.3;
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+  const size = Math.min(cw, ch) * 0.3;
   ctx.font = `${Math.floor(
     size
   )}px system-ui, Apple Color Emoji, Segoe UI Emoji`;
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(emoji, canvas.width / 2, canvas.height / 2 + size * 0.05);
+  ctx.fillText(emoji, cw / 2, ch / 2 + size * 0.05);
 }
 
-// -------- Init model & camera --------
+/* ---------- Init model & camera ---------- */
 async function setupModel() {
   const fileset = await FilesetResolver.forVisionTasks(WASM_ROOT);
   landmarker = await FaceLandmarker.createFromOptions(fileset, {
@@ -108,17 +147,21 @@ async function setupCamera() {
   await v.play();
 
   video = v;
-  const ar = (v.videoWidth || 960) / (v.videoHeight || 540);
-  canvas.height = Math.round(canvas.width / ar);
+
+  // Sync canvas internal buffer to its displayed size
+  resizeCanvasToContainer();
 }
 
-// -------- Main loop --------
+/* ---------- Main loop ---------- */
 function loop() {
   if (!running) return;
   const t = nowMs();
 
   if (video && landmarker) {
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // Clear frame (optional: keep as is since we fully cover with video)
+    // ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
+
+    drawVideoContained(video);
     const res = landmarker.detectForVideo(video, t);
     const blend = blendMap(res?.faceBlendshapes?.[0]);
     drawEmoji(pickEmoji(blend));
@@ -127,7 +170,7 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// -------- UI handlers --------
+/* ---------- UI handlers ---------- */
 btnStart.onclick = async () => {
   btnStart.disabled = true;
   try {
@@ -147,8 +190,24 @@ btnStart.onclick = async () => {
 
 btnFS.onclick = () => {
   if (!document.fullscreenElement) {
-    canvas.requestFullscreen().catch(() => {});
+    canvas
+      .requestFullscreen()
+      .then(resizeCanvasToContainer)
+      .catch(() => {});
   } else {
-    document.exitFullscreen();
+    document
+      .exitFullscreen()
+      .then(resizeCanvasToContainer)
+      .catch(() => {});
   }
 };
+
+/* ---------- Resize handling ---------- */
+window.addEventListener("resize", () => {
+  if (!canvas) return;
+  resizeCanvasToContainer();
+});
+document.addEventListener("fullscreenchange", () => {
+  // Recompute canvas buffer when entering/exiting fullscreen
+  resizeCanvasToContainer();
+});

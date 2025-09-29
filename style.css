@@ -6,6 +6,7 @@
 * {
   box-sizing: border-box;
 }
+
 html,
 body {
   height: 100%;
@@ -14,12 +15,14 @@ body {
   color: var(--fg);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
+
 #app {
   max-width: 1000px;
   margin: 32px auto;
   padding: 16px;
   text-align: center;
 }
+
 #canvas {
   width: 100%;
   height: auto;
@@ -27,6 +30,7 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
   background: #000;
 }
+
 #controls {
   margin: 12px auto 4px;
   display: flex;
@@ -35,6 +39,7 @@ body {
   justify-content: center;
   flex-wrap: wrap;
 }
+
 button {
   background: #1b2332;
   color: var(--fg);
@@ -47,8 +52,38 @@ button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
 #tips {
   opacity: 0.8;
   margin-top: 6px;
   font-size: 14px;
+}
+
+/* Desktop: fill the viewport height, no scrolling */
+@media (min-width: 1024px) {
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    overflow: hidden;
+  } /* prevent page scroll */
+
+  #app {
+    height: 100vh; /* full viewport height */
+    margin: 0 auto; /* avoid extra vertical margin */
+    display: flex;
+    flex-direction: column;
+  }
+
+  #canvas {
+    flex: 1 1 auto; /* take remaining space */
+    width: 100%;
+    min-height: 0; /* allow shrinking if needed */
+  }
+
+  #controls,
+  #tips {
+    flex: 0 0 auto; /* natural height for bars */
+  }
 }
