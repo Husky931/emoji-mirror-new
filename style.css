@@ -19,58 +19,66 @@ body {
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
 }
 
-/* ---------- Main two-column layout ---------- */
+/* ---------- App: Top/Bottom layout ---------- */
 #app {
-  max-width: 1280px;
-  height: 100vh;
+  max-width: 1600px;
+  height: 100svh; /* fill the screen */
+  min-height: 100vh;
   margin: 0 auto;
   padding: 16px;
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-rows: 1fr auto; /* TOP grows, BOTTOM auto */
   gap: 16px;
+  min-width: 0;
 }
 
-#leftPane,
-#rightPane {
-  display: flex;
-  flex-direction: column;
+/* ---------- TOP: 2-column grid (75% / 25%) ---------- */
+#topRow {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 16px;
   min-height: 0;
 }
+#cameraCol,
+#rightPane {
+  min-height: 0;
+} /* allow children to size correctly */
 
-/* ---------- Left: camera + toggle ---------- */
+/* Camera column */
+#cameraCol {
+  display: grid;
+  grid-template-rows: 1fr; /* single cell that stretches */
+  min-height: 0;
+}
 #canvas {
   width: 100%;
-  height: auto;
-  flex: 1 1 auto; /* take vertical space */
+  height: 100%; /* fills camera column height */
   border-radius: 16px;
   background: #000;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.03) inset;
 }
 
-#controls {
-  margin-top: 12px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ---------- Right: two stacked rows ---------- */
+/* Right side: equal height cards */
 #rightPane {
-  display: grid;
-  grid-template-rows: auto 1fr; /* top fits content, bottom grows */
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
-
+#panelFaces,
+#panelCurrent {
+  flex: 1;
+}
 .card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  min-height: 0; /* let content scroll if needed */
+  display: flex;
+  flex-direction: column;
 }
-
 .panel-title {
   margin: 0 0 10px;
   font-size: 18px;
@@ -85,6 +93,7 @@ body {
   gap: 10px;
   flex-wrap: wrap;
   align-items: center;
+  overflow: auto; /* scroll if many emojis */
 }
 .emoji-chip {
   font-size: 28px;
@@ -98,7 +107,7 @@ body {
 
 /* Current face box */
 .current-emoji {
-  height: 100%;
+  flex: 1 1 auto;
   display: grid;
   place-items: center;
   border-radius: 16px;
@@ -106,6 +115,28 @@ body {
   background: #0f1420;
   font-size: clamp(64px, 10vw, 140px);
   line-height: 1;
+}
+
+/* Brand logo above the faces panel */
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.brand-logo {
+  max-width: 100%;
+  /* object-fit: contain; */
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* ---------- BOTTOM: controls row ---------- */
+#bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 /* ---------- Buttons ---------- */
@@ -139,12 +170,5 @@ body {
   box-shadow: 0 6px 18px rgba(110, 231, 255, 0.25);
 }
 
-/* ---------- Responsive: stack on narrow screens ---------- */
-@media (max-width: 1023px) {
-  #app {
-    height: auto;
-    display: flex;
-    flex-direction: row;
-    overflow: visible;
-  }
-}
+/* ---------- (Optional) keep this non-stacking for presentation ---------- */
+/* Add a media query to stack on phones if you ever need it. */

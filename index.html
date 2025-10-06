@@ -8,49 +8,50 @@
   </head>
   <body>
     <div id="app" aria-label="Emoji Mirror App">
-      <!-- Left: camera + toggle -->
-      <section id="leftPane" aria-label="Camera panel">
-        <canvas
-          id="canvas"
-          width="960"
-          height="540"
-          aria-label="Camera preview"
-        ></canvas>
-
-        <div id="controls">
-          <button
-            id="btnCamera"
-            class="btn btn-toggle off"
-            aria-pressed="false"
-          >
-            Turn Camera On
-          </button>
+      <!-- TOP: 2-column grid (camera 75% | expressions 25%) -->
+      <section id="topRow" aria-label="Main content">
+        <div id="cameraCol" aria-label="Camera panel">
+          <canvas
+            id="canvas"
+            width="960"
+            height="540"
+            aria-label="Camera preview"
+          ></canvas>
         </div>
+
+        <aside id="rightPane" aria-label="Expressions panel">
+          <div class="brand-bar" role="img" aria-label="Brand">
+            <img src="./assets/logo_2.png" alt="Brand logo" class="brand-logo" />
+          </div>
+          <div id="panelFaces" class="card">
+            <h2 class="panel-title">Make a few faces</h2>
+            <div
+              id="emojiList"
+              class="emoji-row"
+              aria-label="Available expressions"
+            ></div>
+          </div>
+
+          <div id="panelCurrent" class="card">
+            <h2 class="panel-title">Current face</h2>
+            <div
+              id="currentEmoji"
+              class="current-emoji"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              😐
+            </div>
+          </div>
+        </aside>
       </section>
 
-      <!-- Right: top = faces list, bottom = current face -->
-      <aside id="rightPane" aria-label="Expressions panel">
-        <div id="panelFaces" class="card">
-          <h2 class="panel-title">Make a few faces</h2>
-          <div
-            id="emojiList"
-            class="emoji-row"
-            aria-label="Available expressions"
-          ></div>
-        </div>
-
-        <div id="panelCurrent" class="card">
-          <h2 class="panel-title">Current face</h2>
-          <div
-            id="currentEmoji"
-            class="current-emoji"
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            😐
-          </div>
-        </div>
-      </aside>
+      <!-- BOTTOM: controls bar -->
+      <section id="bottomRow" aria-label="Controls">
+        <button id="btnCamera" class="btn btn-toggle off" aria-pressed="false">
+          Turn Camera On
+        </button>
+      </section>
     </div>
 
     <!-- ES module -->

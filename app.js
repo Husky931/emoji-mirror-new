@@ -94,13 +94,19 @@ function drawVideoContained(videoEl) {
 
   const dx = (cw - dw) / 2;
   const dy = (ch - dh) / 2;
+
+  // Clear to black to prevent ghosting on resizes
+  ctx.fillStyle = "#000";
+  ctx.fillRect(0, 0, cw, ch);
+
   ctx.drawImage(videoEl, dx, dy, dw, dh);
 }
 
-// Graceful placeholder when camera is off
+// Placeholder (same space before/after start → no layout shift)
 function drawPlaceholder() {
   const cw = canvas.clientWidth,
     ch = canvas.clientHeight;
+
   const grad = ctx.createLinearGradient(0, 0, cw, ch);
   grad.addColorStop(0, "rgba(18, 22, 32, 0.95)");
   grad.addColorStop(1, "rgba(28, 34, 48, 0.95)");
@@ -183,11 +189,9 @@ function stopCamera() {
   }
   video = null;
 
-  // Clear canvas & draw placeholder
   resizeCanvasToContainer();
   drawPlaceholder();
 
-  // Reset current emoji display
   lastEmoji = EMOJI_SET.neutral;
   currentEmojiEl.textContent = lastEmoji;
 }
@@ -206,18 +210,7 @@ function loop() {
     const emoji = pickEmoji(blend);
     lastEmoji = emoji;
 
-    // Optional overlay on the canvas (centered)
-    const cw = canvas.clientWidth;
-    const ch = canvas.clientHeight;
-    const size = Math.min(cw, ch) * 0.18;
-    ctx.font = `${Math.floor(
-      size
-    )}px system-ui, Apple Color Emoji, Segoe UI Emoji`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(emoji, cw / 2, ch / 2 + size * 0.05);
-
-    // Update the big “Current face”
+    // Only update the right-side box (no overlay on canvas)
     currentEmojiEl.textContent = emoji;
   }
 
@@ -261,7 +254,7 @@ btnCamera.onclick = async () => {
   }
 };
 
-/* ---------- Populate right-side emoji list ---------- */
+/* ---------- Populate emoji list ---------- */
 (function renderEmojiList() {
   const frag = document.createDocumentFragment();
   for (const [name, glyph] of Object.entries(EMOJI_SET)) {
@@ -275,8 +268,10 @@ btnCamera.onclick = async () => {
 })();
 
 /* ---------- Initial sizing & placeholder ---------- */
-window.addEventListener("resize", () => resizeCanvasToContainer());
+window.addEventListener("resize", () => {
+  resizeCanvasToContainer();
+  if (!running) drawPlaceholder();
+});
 resizeCanvasToContainer();
 drawPlaceholder();
-/* reflect current emoji on load */
 currentEmojiEl.textContent = lastEmoji;
