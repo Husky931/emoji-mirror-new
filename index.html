@@ -2,9 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-store, no-cache, must-revalidate, max-age=0"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Emoji Mirror (Offline Demo)</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=dev" />
   </head>
   <body>
     <div id="app" aria-label="Emoji Mirror App">
@@ -21,7 +27,11 @@
 
         <aside id="rightPane" aria-label="Expressions panel">
           <div class="brand-bar" role="img" aria-label="Brand">
-            <img src="./assets/logo_2.png" alt="Brand logo" class="brand-logo" />
+            <img
+              src="./assets/logo_2.png?v=dev"
+              alt="Brand logo"
+              class="brand-logo"
+            />
           </div>
           <div id="panelFaces" class="card">
             <h2 class="panel-title">Make a few faces</h2>
@@ -54,7 +64,9 @@
       </section>
     </div>
 
-    <!-- ES module -->
-    <script type="module" src="app.js"></script>
+    <!-- ES module with explicit import so we can add a cache-busting query -->
+    <script type="module">
+      import "./app.js?v=dev";
+    </script>
   </body>
 </html>
